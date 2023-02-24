@@ -1,12 +1,15 @@
 Package: MRPlotly
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Interactive Plots of TwoSampleMR output using plotly
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author@R: person("Subrata", "Paul", email = 'subrata.paul@nih.gov', role = c('aut', 'cre'))
+Maintainer: The package maintainer <subrata.paul@nih.gov>
+Description: TwoSampleMR is used to run Mendelian Randomization on exposure and outcome GWAS summary statistics. This package produces interactive plotly figures using the results of TwoSampleMR. 
+License: `use_mit_license()`
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
+Imports:
+  dplyr,
+  plotly,
+  magrittr
