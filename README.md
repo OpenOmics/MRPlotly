@@ -11,7 +11,7 @@ The plotting functions are similar to that in TwoSampleMR. The main functions ar
 Install the package using `devtools` as
 
 ```
-devtools::install_github('spaul-genetics/MRPlotly')
+devtools::install_github('OpenOmics/MRPlotly')
 ```
 
 A complete example:
