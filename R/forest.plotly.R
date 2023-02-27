@@ -51,16 +51,6 @@ forest.plotly<-function(res_single){
     return(fig)
   }
 
-  if(is.character(res_single)){
-    if(grepl('.csv', res_single)){
-      res_single = read.csv(res_single)
-    }else{
-      res_single = read.table(res_single, header = T)
-    }
-  }else{
-    if(!is.data.frame(res_single)) stop('res_single has to be either a data.frame or file containing the data')
-  }
-
 
 
   if(is.character(res_single)){
