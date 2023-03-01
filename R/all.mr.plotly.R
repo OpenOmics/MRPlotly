@@ -121,6 +121,8 @@ all.mr.plotly<-function(res, res_single, res_loo, dat, out = NA, include_data = 
     }else{
       failed = read.table(failed, header = T)
     }
+  }else{
+    failed = data.frame(File = c(NA), Error = c(NA))
   }
   
   if(!is.na(versions)){
