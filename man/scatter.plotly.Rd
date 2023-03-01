@@ -7,9 +7,9 @@
 scatter.plotly(res, dat)
 }
 \arguments{
-\item{`res`}{- Output of MR analysis using TwoSampleMR `mr` function}
+\item{`res`}{- Output of MR analysis using TwoSampleMR \code{\link[TwoSampleMR]{mr}} function}
 
-\item{`dat`}{- Harmonized data. Output of the `harmonise_data` function from TwoSampleMR package}
+\item{`dat`}{- Harmonized data. Output of the \code{\link[TwoSampleMR]{harmonise_data}} function from TwoSampleMR package}
 }
 \description{
 Scatter plot for TwoSampleMR analysis

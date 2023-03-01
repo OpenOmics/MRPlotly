@@ -7,7 +7,7 @@
 funnel.plotly(res_single)
 }
 \arguments{
-\item{`res_single`}{}
+\item{res_single}{Output data.frame from \code{\link[TwoSampleMR]{mr_singlesnp}} or filename containing the result in csv format}
 }
 \description{
 Funnel plot for TwoSampleMR

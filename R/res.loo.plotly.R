@@ -8,7 +8,7 @@
 #' res_loo <- mr_leaveoneout(dat)
 #' res.loo.plotly(res_loo)
 #'
-#' @param `res_loo`, output from `mr_leaveoneout`
+#' @param res_loo output from \code{\link[TwoSampleMR]{mr_leaveoneout}}
 #' @export
 #'
 
@@ -39,7 +39,7 @@ res.loo.plotly<-function(res_loo){
               ),
               hoveron = 'points+fills'
       )
-    fig = fig%>%layout(xaxis = list(title = 'MR effect size'),
+    fig = fig%>%plotly::layout(xaxis = list(title = 'MR effect size'),
                        yaxis = list(title = '', type = 'category', categoryarray = ~SNP, categoryorder = 'trace', autorange = T))
     return(fig)
   }

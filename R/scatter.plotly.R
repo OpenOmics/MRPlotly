@@ -1,8 +1,8 @@
 #' Scatter plot for TwoSampleMR analysis
 #'
 #' @author Subrata Paul
-#' @param `res` - Output of MR analysis using TwoSampleMR `mr` function
-#' @param `dat` - Harmonized data. Output of the `harmonise_data` function from TwoSampleMR package
+#' @param `res` - Output of MR analysis using TwoSampleMR \code{\link[TwoSampleMR]{mr}} function
+#' @param `dat` - Harmonized data. Output of the \code{\link[TwoSampleMR]{harmonise_data}} function from TwoSampleMR package
 #'
 #' @examples
 #'
@@ -45,7 +45,8 @@ scatter.plotly<-function(res, dat){
                                     text = ~SNP,
                                     error_x = ~list(array = zero),
                                     error_y = ~list(array = zero))%>%
-      layout(legend = list(x = 0.7, y = 1))
+      plotly::layout(legend = list(x = 0.7, y = 0.93))
+    
     return(fig)
   }
 
@@ -124,15 +125,12 @@ scatter.plotly<-function(res, dat){
   plot_names = expand.grid(exposures = unique(res_dat$id.exposure), outcomes = unique(res_dat$id.outcome))
   plot_names$names = paste(plot_names$exposures, plot_names$outcomes, sep = '.')
 
-  print(nrow(plot_names))
-
   if(nrow(plot_names)==1){
     return(scatter.plotly.single(
       res_dat%>%dplyr::filter(id.exposure == plot_names$exposures[1] & id.outcome == plot_names$outcomes[1])
       )
     )
   }else{
-    print('test')
     all_scatter_plotly<-list()
     for(i in 1:nrow(plot_names)){
       all_scatter_plotly[[plot_names$names[i]]] <- scatter.plotly.single(

@@ -7,20 +7,20 @@
 forest.plotly(res_single)
 }
 \arguments{
-\item{res_single}{Output data.frame from `mr_singlesnp` or filename containing the result in csv format}
+\item{res_single}{Output data.frame from \code{\link[TwoSampleMR]{mr_singlesnp}} or filename containing the result in csv format}
 }
 \description{
 List of forest plots for multiple outcome-exposure
 }
-\author{
-Subrata Paul
-
-#' @examples
+\examples{
 bmi_exp_dat <- extract_instruments(outcomes = c('ieu-a-2', 'ieu-a-9', 'ieu-a-12'))
 chd_out_dat <- extract_outcome_data(snps = bmi_exp_dat$SNP, outcomes = 'ieu-a-7')
 dat <- harmonise_data(bmi_exp_dat, chd_out_dat)
 res_single <- mr_singlesnp(dat)
-forest.plotly.single(res_single)
+forest.plotly(res_single)
 
-This function gives plotly object based on the results of `mr_singlesnp`. The forest plot compares the MR estimates using the different MR methods against the single SNP tests.
+This function gives plotly object based on the results of \code{\link[TwoSampleMR]{mr_singlesnp}}. The forest plot compares the MR estimates using the different MR methods against the single SNP tests.
+}
+\author{
+Subrata Paul
 }

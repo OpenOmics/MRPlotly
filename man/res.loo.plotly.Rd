@@ -7,7 +7,7 @@
 res.loo.plotly(res_loo)
 }
 \arguments{
-\item{`res_loo`, }{output from `mr_leaveoneout`}
+\item{res_loo}{output from \code{\link[TwoSampleMR]{mr_leaveoneout}}}
 }
 \description{
 Plot TwoSampleMR leave-one-out crossvalidation

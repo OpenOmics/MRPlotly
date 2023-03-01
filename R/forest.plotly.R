@@ -2,15 +2,15 @@
 #'
 #' @author Subrata Paul
 #'
-#' #' @examples
+#' @examples
 #' bmi_exp_dat <- extract_instruments(outcomes = c('ieu-a-2', 'ieu-a-9', 'ieu-a-12'))
 #' chd_out_dat <- extract_outcome_data(snps = bmi_exp_dat$SNP, outcomes = 'ieu-a-7')
 #' dat <- harmonise_data(bmi_exp_dat, chd_out_dat)
 #' res_single <- mr_singlesnp(dat)
-#' forest.plotly.single(res_single)
+#' forest.plotly(res_single)
 #'
-#' This function gives plotly object based on the results of `mr_singlesnp`. The forest plot compares the MR estimates using the different MR methods against the single SNP tests.
-#' @param res_single Output data.frame from `mr_singlesnp` or filename containing the result in csv format
+#' This function gives plotly object based on the results of \code{\link[TwoSampleMR]{mr_singlesnp}}. The forest plot compares the MR estimates using the different MR methods against the single SNP tests.
+#' @param res_single Output data.frame from \code{\link[TwoSampleMR]{mr_singlesnp}} or filename containing the result in csv format
 #' @export
 #' @import plotly
 #' @import dplyr
@@ -21,7 +21,6 @@
 
 forest.plotly<-function(res_single){
 
-
   forest.plotly.single<-function(res_single, nticks = 40){
     res_single$Type = factor(ifelse(grepl('All', res_single$SNP), 'All','SNP'), levels = c('SNP','All'))
     res_single = res_single%>%arrange(b)
@@ -31,10 +30,10 @@ forest.plotly<-function(res_single){
 
 
     fig1 = res_single%>%filter(Type == 'SNP')%>%
-      plot_ly(x = ~b, y = ~SNP, color = ~Type,
+      plot_ly(x = ~b, y = ~SNP, color = ~Type, colors = 'Set2',
               type = 'scatter', mode = 'markers',
               error_x = ~list(array = se))%>%
-      layout(xaxis = list(title = 'MR effect size'),
+      plotly::layout(xaxis = list(title = 'MR effect size'),
              yaxis = list(title = '', categoryorder = 'trace'),
              showlegend = F)
 
@@ -42,7 +41,7 @@ forest.plotly<-function(res_single){
       plot_ly(x = ~b, y = ~SNP, color = ~Type,
               type = 'scatter', mode = 'markers',
               error_x = ~list(array = se))%>%
-      layout(xaxis = list(title = 'MR effect size'),
+      plotly::layout(xaxis = list(title = 'MR effect size'),
              yaxis = list(title = '', categoryorder = 'trace'),
              showlegend = F)
 

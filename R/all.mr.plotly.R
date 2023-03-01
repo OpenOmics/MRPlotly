@@ -8,13 +8,16 @@
 #' res_single <- mr_singlesnp(dat)
 #' all.mr.plotly(res_single)
 #' 
-#' @param res_single Output data.frame from `mr_singlesnp` or filename containing the result in csv format
-#' @param `res` - Output of MR analysis using TwoSampleMR `mr` function
-#' @param `dat` - Harmonized data. Output of the `harmonise_data` function from TwoSampleMR package
-#' @param `out` - Output file name. If provided the plots will be saved as .rds otherwise a list of all plots will be returned. 
-#' @param `include_data` - Logical. Default is FALSE
+#' @param res_single Output data.frame from \code{\link[TwoSampleMR]{mr_singlesnp}} or filename containing the result in csv format
+#' @param res_loo Output of leave-one-out analyais from \code{\link[TwoSampleMR]{mr_leaveoneout}} function
+#' @param res  Output of MR analysis using TwoSampleMR \code{\link[TwoSampleMR]{mr}} function
+#' @param dat  Harmonized data. Output of the \code{\link[TwoSampleMR]{harmonise_data}} function from TwoSampleMR package
+#' @param out  Output file name. If provided the plots will be saved as .rds otherwise a list of all plots will be returned. 
+#' @param include_data  Logical. Default is FALSE
+#' @param failed A csv or tsv file containing information about failed runs. THe information will be displayed in the dashboard as a table. 
+#' @param version Software versions used to run the analysis to be displayed in the dashboard. Use \code{sessionInfo()} to generate the version information. 
 #' 
-#' @export all.rm.plotly
+#' @export all.mr.plotly
 #'
 #'@import plotly
 #'@import dplyr
@@ -23,7 +26,7 @@
 
 
 
-all.rm.plotly<-function(res, res_single, dat, out = NA, include_data = F){
+all.mr.plotly<-function(res, res_single, res_loo, dat, out = NA, include_data = F, failed = NA, versions = NA){
   blank_plot <- function(message)
   {
     requireNamespace("ggplot2", quietly=TRUE)
@@ -104,12 +107,28 @@ all.rm.plotly<-function(res, res_single, dat, out = NA, include_data = F){
   # Generate plots
   
   all_plots<-list()
-  all_plots$Forest<-forest.plotly(res_single)
+  all_plots$Forest<-suppressWarnings(forest.plotly(res_single))
   all_plots$LOO = res.loo.plotly(res_loo)
   all_plots$Scatter<- scatter.plotly(res, dat)
   all_plots$Funnel<-funnel.plotly(res_single)
   all_plots$exposures = unique(res$id.exposure)
   all_plots$outcomes = unique(res$id.outcome)
+  
+  
+  if(!is.na(failed)){
+    if(grepl('.csv', failed)){
+      failed = read.csv(failed)
+    }else{
+      failed = read.table(failed, header = T)
+    }
+  }
+  
+  if(!is.na(versions)){
+    versions = readLines(versions)
+  }
+  
+  all_plots$failed = failed
+  all_plots$version = versions
   
   if(include_data){
     all_plots$data.res = res

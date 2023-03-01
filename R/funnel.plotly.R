@@ -10,10 +10,11 @@
 #' res_single <- mr_singlesnp(dat)
 #' funnel.plotly(res_single)
 #'
-#' @param `res_single`
+#' @param res_single Output data.frame from \code{\link[TwoSampleMR]{mr_singlesnp}} or filename containing the result in csv format
 #'
 #' @export
 #' @import plotly
+#' @import ggplot2
 #' @import dplyr
 #' @import magrittr
 
