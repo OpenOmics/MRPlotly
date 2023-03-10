@@ -22,6 +22,7 @@
 #'@import plotly
 #'@import dplyr
 #'@import magrittr
+#'@import TwoSampleMR
 #'
 
 
