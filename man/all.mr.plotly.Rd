@@ -9,10 +9,15 @@
   res_single,
   res_loo,
   dat,
-  out = NA,
+  out = NULL,
   include_data = F,
-  failed = NA,
-  versions = NA
+  failed = NULL,
+  versions = NULL,
+  heterogeneity = NULL,
+  pleiotropy = NULL,
+  pheno_data = NULL,
+  avail_pheno = NULL,
+  avail_pheno_names = c("Pan-UKBB", "ieuGWAS")
 )
 }
 \arguments{
@@ -29,6 +34,12 @@
 \item{include_data}{Logical. Default is FALSE}
 
 \item{failed}{A csv or tsv file containing information about failed runs. THe information will be displayed in the dashboard as a table.}
+
+\item{pheno_data}{A data frame containing information about the outcome phenotypes that were used in the analysis to be included in the dashboard.}
+
+\item{avail_pheno}{A tsv or csv file containing information about the gwas summary statistcs available in the system or database. It can be multiple files in a vector. By default Pan-UKBB and ieu open gwas project databases are used.}
+
+\item{avail_pheno_names}{A vector of the names of the databases. By default it is Pan-UKBB and ieuGWAS. Please note that avail_pheno and avail_pheno_names are for dashboard report only. If you have a different database please change the names on the dashboard.Rmd created by make.dashboard function. For default values avail_pheno should have file names of Pan-UKBB and ieuGWAS.}
 
 \item{version}{Software versions used to run the analysis to be displayed in the dashboard. Use \code{sessionInfo()} to generate the version information.}
 }
