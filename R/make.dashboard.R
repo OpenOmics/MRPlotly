@@ -10,5 +10,7 @@
 
 
 make.dashboard<-function(file = 'dashboard'){
+  #Use usethis::use_data(dashboard, internal = T, overwrite = T) 
+  # two write internal data
   writeLines(rmd, paste0(file, '.Rmd'))
 }

@@ -3,7 +3,7 @@ title: "MR Analysis"
 output: 
   flexdashboard::flex_dashboard:
     storyboard: yes
-    orientation: columns
+    orientation: rows
     social: menu
     source_code: embed
     vertical_layout: fill
@@ -27,7 +27,7 @@ resize_plotly<-function(fig, xlab, ylab){
                      yaxis = list(title = ifelse(input$yaxis_title=='', ylab, input$yaxis_title), 
                                   titlefont = list(size = input$axis_title), 
                                   tickfont = list(size = input$axis_texts)),
-                     legend = list(font = list(size = input$legend_text)))
+                     legend = list(font = list(size = input$legend_text), title = list(font = list(size = input$legend_title))))
   }else{
     fig = fig%>%layout(xaxis = list(title = ifelse(input$xaxis_title=='', xlab, input$xaxis_title),
                                     titlefont = list(size = input$all_texts), 
@@ -35,9 +35,10 @@ resize_plotly<-function(fig, xlab, ylab){
                      yaxis = list(title = ifelse(input$yaxis_title=='', ylab, input$yaxis_title),
                                   titlefont = list(size = input$all_texts), 
                                   tickfont = list(size = input$all_texts)),
-                     legend = list(font = list(size = input$all_texts)))
+                     legend = list(font = list(size = input$all_texts), title = list(font = list(size = input$all_texts))))
   }
   
+  fig = fig%>%layout(legend = list(x = input$legend_x, y = input$legend_y))
   return(fig)
 }
 
@@ -61,7 +62,7 @@ create_dt_new<-function(x){
       dom = "QBlrtip",  # specify content (search box, etc)
       deferRender = TRUE,
       scrollX = TRUE,
-      scrollY = 800,
+      scrollY = 100,
       scroller = TRUE,
       buttons = list(
         list(
@@ -79,6 +80,80 @@ create_dt_new<-function(x){
 )
 }
 
+
+create_dt_large<-function(x){
+  download_basename = 'mr_results'
+  datatable(
+    x,
+    rownames = FALSE,    # hide rownames
+    escape = FALSE,      # allow embedding of html for image
+    # filter = "bottom", # allows filtering on each column
+    extensions = c(
+      "Buttons",         # add download buttons
+      "Scroller"    # create complex search queries
+    ),
+    filter = list(position = 'top', clear = F),
+    style = "auto",
+    width = "100%",
+    options = list(
+      dom = "BRPltipf",  # specify content (search box, etc)
+      deferRender = TRUE,
+      scrollX = TRUE,
+      scrollY = 650,
+      Server = TRUE,
+      buttons = list(
+        list(
+          extend="csv",   # download as .csv
+          filename=download_basename,
+          exportOptions=list(columns = ':gt(0)')
+        ),
+        list(
+          extend="excel",  # download as .xlsx
+          filename=download_basename,
+          exportOptions=list(columns = ':gt(0)')
+        )
+      )
+    ),
+)
+}
+
+
+
+create_dt_wo_search<-function(x){
+  download_basename = 'mr_results'
+  datatable(
+    x,
+    rownames = FALSE,    # hide rownames
+    escape = FALSE,      # allow embedding of html for image
+    # filter = "bottom", # allows filtering on each column
+    extensions = c(
+      "Buttons",         # add download buttons
+      "Scroller"        # for scrolling instead of pagination
+    ),
+    filter = list(position = 'top', clear = F),
+    style = "auto",
+    width = "100%",
+    options = list(
+      dom = "QBlrtip",  # specify content (search box, etc)
+      deferRender = TRUE,
+      scrollX = TRUE,
+      scrollY = 100,
+      scroller = TRUE,
+      buttons = list(
+        list(
+          extend="csv",   # download as .csv
+          filename=download_basename,
+          exportOptions=list(columns = ':gt(0)')
+        ),
+        list(
+          extend="excel",  # download as .xlsx
+          filename=download_basename,
+          exportOptions=list(columns = ':gt(0)')
+        )
+      )
+    ),
+)
+}
 
 
 all_plots <- eventReactive(input$all_plots,{
@@ -123,8 +198,12 @@ numericInput('axis_texts', h4('Size for axis text'), 12)
 numericInput('axis_title', h4('Size for axis title'), 12)
 numericInput('legend_text', h4('Size for legend text'), 12)
 numericInput('legend_title', h4('Size for legend title'), 12)
+numericInput('legend_x', h4('Legend position - xaxis'), 0.8, min = -0.5,max = 1.5, step = 0.1)
+numericInput('legend_y', h4('Legend position - yaxis'), 0.8, min = -0.5,max = 1.5, step = 0.1)
 textInput('xaxis_title', h4('Title for x axis'), '')
 textInput('yaxis_title', h4('Title for y axis'), '')
+
+
 
 ```
 
@@ -184,6 +263,11 @@ renderPlotly({
 
 # Result
 
+Column {.tabset}
+------------------------------------------------------------------
+
+### Main
+
 ```{r}
 renderDT({
   res = all_plots()$data.res
@@ -193,9 +277,93 @@ renderDT({
   res$method = factor(res$method)
   res$exposure = factor(res$exposure)
   res$outcome = factor(res$outcome)
-  create_dt_new(res)
+  create_dt_wo_search(res)
+})
+```
+
+### Pleiotropy
+
+```{r}
+renderDT({
+  pleiotropy = all_plots()$pleiotropy
+  pleiotropy = pleiotropy[pleiotropy$id.exposure == input$exposure & pleiotropy$id.outcome == input$outcome,]
+  pleiotropy$id.exposure = factor(pleiotropy$id.exposure)
+  pleiotropy$id.outcome = factor(pleiotropy$id.outcome)
+  #pleiotropy$method = factor(pleiotropy$method)
+  pleiotropy$exposure = factor(pleiotropy$exposure)
+  pleiotropy$outcome = factor(pleiotropy$outcome)
+  create_dt_wo_search(pleiotropy)
 })
 
+
+```
+
+
+### Heterogeneity
+
+```{r}
+renderDT({
+  heterogeneity = all_plots()$heterogeneity
+  heterogeneity = heterogeneity[heterogeneity$id.exposure == input$exposure & heterogeneity$id.outcome == input$outcome,]
+  heterogeneity$id.exposure = factor(heterogeneity$id.exposure)
+  heterogeneity$id.outcome = factor(heterogeneity$id.outcome)
+  heterogeneity$method = factor(heterogeneity$method)
+  heterogeneity$exposure = factor(heterogeneity$exposure)
+  heterogeneity$outcome = factor(heterogeneity$outcome)
+  create_dt_wo_search(heterogeneity)
+})
+```
+
+
+# Outcomes
+
+Column {.tabset}
+------------------------------------------------------------------
+
+### Selected
+
+```{r}
+renderDT({
+  selected<-all_plots()$pheno_data
+  selected = data.frame(Item = names(selected), Details = unlist(selected[selected$outcome.id == input$outcome,]))
+  #create_dt_large(selected)
+  DT::datatable(selected, height = '100%', options = list(lengthMenu = c(50,100,150), dom = "QBlrtip"), rownames = F,filter = list(position = 'top', clear = F))
+})
+```
+
+### All used
+
+```{r}
+renderDT({
+  used_pheno = all_plots()$pheno_data
+  create_dt_new(used_pheno)
+})
+```
+
+
+### Pan-UKBB
+
+```{r}
+renderDT({
+  panukbb = all_plots()$avail_pheno[['Pan-UKBB']]
+  panukbb$trait_type = factor(panukbb$trait_type)
+  panukbb$pheno_sex = factor(panukbb$pheno_sex)
+  panukbb$outcome.id = gsub('.tsv.bgz', '', panukbb$outcome.id)
+  create_dt_large(panukbb)
+})
+```
+
+
+### IEU GWAS
+
+```{r}
+renderDT({
+  ieu = all_plots()$avail_pheno[['ieuGWAS']]
+  ieu$sex = factor(ieu$sex)
+  ieu$population = factor(ieu$population)
+  ieu$category = factor(ieu$category)
+  create_dt_large(ieu)
+})
 ```
 
 

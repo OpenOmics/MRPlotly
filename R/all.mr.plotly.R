@@ -16,8 +16,10 @@
 #' @param include_data  Logical. Default is FALSE
 #' @param failed A csv or tsv file containing information about failed runs. THe information will be displayed in the dashboard as a table. 
 #' @param version Software versions used to run the analysis to be displayed in the dashboard. Use \code{sessionInfo()} to generate the version information. 
-#' 
-#' @export all.mr.plotly
+#' @param pheno_data A data frame containing information about the outcome phenotypes that were used in the analysis to be included in the dashboard. 
+#' @param avail_pheno A tsv or csv file containing information about the gwas summary statistcs available in the system or database. It can be multiple files in a vector. By default Pan-UKBB and ieu open gwas project databases are used.
+#' @param avail_pheno_names A vector of the names of the databases. By default it is Pan-UKBB and ieuGWAS. Please note that avail_pheno and avail_pheno_names are for dashboard report only. If you have a different database please change the names on the dashboard.Rmd created by make.dashboard function. For default values avail_pheno should have file names of Pan-UKBB and ieuGWAS. 
+#' @export all.mr.plotly 
 #'
 #'@import plotly
 #'@import dplyr
@@ -27,7 +29,19 @@
 
 
 
-all.mr.plotly<-function(res, res_single, res_loo, dat, out = NA, include_data = F, failed = NA, versions = NA){
+all.mr.plotly<-function(res, 
+                        res_single, 
+                        res_loo, 
+                        dat, 
+                        out = NULL, 
+                        include_data = F, 
+                        failed = NULL, 
+                        versions = NULL, 
+                        heterogeneity = NULL, 
+                        pleiotropy = NULL, 
+                        pheno_data = NULL,
+                        avail_pheno = NULL, 
+                        avail_pheno_names = c('Pan-UKBB', 'ieuGWAS')){
   blank_plot <- function(message)
   {
     requireNamespace("ggplot2", quietly=TRUE)
@@ -116,7 +130,7 @@ all.mr.plotly<-function(res, res_single, res_loo, dat, out = NA, include_data = 
   all_plots$outcomes = unique(res$id.outcome)
   
   
-  if(!is.na(failed)){
+  if(!is.null(failed)){
     if(grepl('.csv', failed)){
       failed = read.csv(failed)
     }else{
@@ -126,12 +140,52 @@ all.mr.plotly<-function(res, res_single, res_loo, dat, out = NA, include_data = 
     failed = data.frame(File = c(NA), Error = c(NA))
   }
   
-  if(!is.na(versions)){
+  if(!is.null(versions)){
     versions = readLines(versions)
   }
   
+  if(!is.null(heterogeneity)){
+    if(grepl('.csv', heterogeneity)){
+      heterogeneity = read.csv(heterogeneity)
+    }else{
+      heterogeneity = read.table(heterogeneity, header = T)
+    }
+  }else{
+    heterogeneity = data.frame(File = c(NA), Error = c(NA))
+  }
+  
+  if(!is.null(pleiotropy)){
+    if(grepl('.csv', pleiotropy)){
+      pleiotropy = read.csv(pleiotropy)
+    }else{
+      pleiotropy = read.table(pleiotropy, header = T)
+    }
+  }else{
+    pleiotropy = data.frame(File = c(NA), Error = c(NA))
+  }
+  
+
+  if(!is.null(pheno_data)){
+    if(grepl('.csv', pheno_data)){
+      pheno_data = read.csv(pheno_data)
+      names(pheno_data) = tolower(names(pheno_data))
+    }else{
+      pheno_data = read.delim(pheno_data, header = T)
+      names(pheno_data) = tolower(names(pheno_data))
+    }
+  }else{
+    pheno_data = data.frame(File = c(NA), Error = c(NA))
+  }
+  
+  
+  
+  
   all_plots$failed = failed
   all_plots$version = versions
+  all_plots$heterogeneity = heterogeneity
+  all_plots$pleiotropy = pleiotropy
+  all_plots$pheno_data = pheno_data
+  
   
   if(include_data){
     all_plots$data.res = res
@@ -139,7 +193,28 @@ all.mr.plotly<-function(res, res_single, res_loo, dat, out = NA, include_data = 
     all_plots$data.harmo = dat
   }
   
-  if(is.na(out)){
+  
+  if(!is.null(avail_pheno)){
+    all_phenos <- list()
+    if(length(avail_pheno)!=length(avail_pheno_names)){
+      warning('Please provide names for all sets of available outcome data.\n Did not include the list of available phenotypes')
+      all_phenos[['NA']]<-data.frame(Information = c(NA), Not = c(NA), Provided = c(NA))
+    }else{
+      for(i in 1:length(avail_pheno)){
+        if(grepl('.csv', avail_pheno[i])){
+          read_pheno = read.csv(avail_pheno[i])
+        }else{
+          read_pheno = read.delim(avail_pheno[i], header = T)
+        }
+        names(read_pheno) = tolower(names(read_pheno))
+        all_phenos[[avail_pheno_names[i]]]<-read_pheno 
+      }  
+    }
+  }
+  
+  all_plots$avail_pheno = all_phenos
+  
+  if(is.null(out)){
     return(all_plots)
   }else{
     if(endsWith(out, '.rds')){
